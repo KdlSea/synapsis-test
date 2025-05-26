@@ -8,6 +8,13 @@ Live Url : https://synapsis-test-fachrif.vercel.app/ </br>
 #chart element ( not work )</br></br>
 ![image](https://github.com/user-attachments/assets/b3aa0fc6-0485-437a-bcff-0f7e2c7b9b46)</br></br>
 
+#table sorting and search ( by name ) work</br>
+#table delete work </br>
+#table edit not work</br>
+#only show user table ( post table haven't yet ) </br>
+![image](https://github.com/user-attachments/assets/d33372b7-6b56-4ea2-a7d8-bee8dc38e7c8)</br></br></br>
+
+
 #sidebar toggle not work</br>
 #create- post and user works</br>
 
