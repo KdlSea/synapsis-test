@@ -1,17 +1,16 @@
 "use server";
 
 import axios from "axios";
-import { setSession } from "./sessions";
+import { clearSession, setSession } from "./sessions";
 import { redirect } from "next/navigation";
-import { match } from "assert";
 
 export const signOut = async () => {
-  //   await clearSession();
+  await clearSession();
   return redirect("/log-in");
 };
 export const signIn = async (userData: GuestEmail, token: string) => {
   try {
-    const response = await axios.get("https://gorest.co.in/public/v2/users", {
+    const response = await axios.get("https://gorest.co.in/public/v2/users?per_page=100", {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",

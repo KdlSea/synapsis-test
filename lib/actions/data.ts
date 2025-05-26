@@ -4,16 +4,68 @@ import axios from "axios";
 import { getSession } from "./sessions";
 import { error } from "console";
 
+export const deleteUserById = async (id: string, name: string) => {
+  try {
+    const { token } = await getSession();
+    if (!token) throw new Error("Unauthorized");
+
+    const response = await axios.delete(
+      `https://gorest.co.in/public/v2/users/${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return { success: true, message: `User ${name} with ${id} deleted` };
+  } catch (error: any) {
+    console.error("Delete failed:", error.response?.data || error.message);
+    return { success: false, message: "Delete failed" };
+  }
+};
+
+export const getUserMockData = async () => {
+  try {
+    const { token } = await getSession();
+    if (token === null) throw new Error();
+
+    const response = await axios.get(
+      "https://gorest.co.in/public/v2/users?per_page=100",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error: any) {
+    console.error(
+      "Failed to retrieve users:",
+      error.response?.data || error.message
+    );
+    return {
+      success: false,
+      message: "Failed to retrieve users",
+    };
+  }
+};
+
 export const getAllPosts = async () => {
   try {
     const { token } = await getSession();
     if (token === null) throw new Error();
-    const response = await axios.get("https://gorest.co.in/public/v2/posts?per_page=100", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await axios.get(
+      "https://gorest.co.in/public/v2/posts?per_page=100",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
     return response.data;
   } catch (error: any) {
     console.error("Create User Failed:", error.response?.data || error.message);
@@ -61,12 +113,15 @@ export const getAllUser = async () => {
   try {
     const { token } = await getSession();
     if (token === null) throw new Error();
-    const response = await axios.get("https://gorest.co.in/public/v2/users?per_page=100", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await axios.get(
+      "https://gorest.co.in/public/v2/users?per_page=100",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
     return response.data;
   } catch (error: any) {
     console.error("Create User Failed:", error.response?.data || error.message);

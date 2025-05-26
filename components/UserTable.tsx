@@ -1,47 +1,71 @@
 "use client";
 
-import { Table, Input, Select, Dropdown, Button } from "antd";
+import {
+  Table,
+  Input,
+  Select,
+  Dropdown,
+  Button,
+  message,
+  Popconfirm,
+} from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { MoreOutlined } from "@ant-design/icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { deleteUserById, getUserMockData } from "@/lib/actions/data";
 
 const { Option } = Select;
 
-interface UserData {
-  id: string;
-  name: string;
-  email: string;
-  gender: "Male" | "Female";
-  status: "Active" | "Inactive";
-}
-
-const mockData: UserData[] = Array.from({ length: 32 }, (_, index) => ({
-  id: `#12345${index}`,
-  name: "Nufik",
-  email: "nufik.emailforall@gmail.com",
-  gender: "Male",
-  status: "Active",
-}));
-
 const UserTable = () => {
+  const [data, setData] = useState<dataCust[]>([]);
   const [filteredGender, setFilteredGender] = useState<string>();
   const [filteredStatus, setFilteredStatus] = useState<string>();
   const [searchName, setSearchName] = useState<string>("");
 
-  const filteredData = mockData.filter((item) => {
+  const [loading, setLoading] = useState(true);
+
+  // Fetch 100 users on mount
+  useEffect(() => {
+    const fetchData = async () => {
+      const dataFetch = await getUserMockData();
+      if (dataFetch) console.log(setLoading(!loading));
+      setData(dataFetch);
+    };
+
+    fetchData();
+  }, []);
+
+  // Filtered client-side
+  const filteredData = data.filter((user) => {
     return (
-      (!filteredGender || item.gender === filteredGender) &&
-      (!filteredStatus || item.status === filteredStatus) &&
+      (!filteredGender || user.gender === filteredGender.toLowerCase()) &&
+      (!filteredStatus || user.status === filteredStatus.toLowerCase()) &&
       (!searchName ||
-        item.name.toLowerCase().includes(searchName.toLowerCase()))
+        user.name?.toLowerCase().includes(searchName.toLowerCase()))
     );
   });
 
-  const columns: ColumnsType<UserData> = [
+  const handleDelete = async (id: string, name: string) => {
+    setLoading(true);
+    const result = await deleteUserById(id, name);
+
+    if (result.success) {
+      message.success(result.message);
+      // Refetch data
+      const refreshed = await getUserMockData();
+      setData(refreshed);
+    } else {
+      message.error(result.message);
+    }
+
+    setLoading(false);
+  };
+
+  const columns: ColumnsType<dataCust> = [
     {
       title: "ID",
       dataIndex: "id",
-      sorter: (a, b) => a.id.localeCompare(b.id),
+      sorter: (a, b) => a.id - b.id,
     },
     {
       title: "Name",
@@ -55,22 +79,40 @@ const UserTable = () => {
     {
       title: "Gender",
       dataIndex: "gender",
-      sorter: (a, b) => a.gender.localeCompare(b.gender),
+      filters: [
+        { text: "Male", value: "male" },
+        { text: "Female", value: "female" },
+      ],
+      onFilter: (value, record) => record.gender === value,
     },
     {
       title: "Status",
       dataIndex: "status",
-      sorter: (a, b) => a.status.localeCompare(b.status),
+      filters: [
+        { text: "Active", value: "active" },
+        { text: "Inactive", value: "inactive" },
+      ],
+      onFilter: (value, record) => record.status === value,
     },
     {
       title: "Action",
       dataIndex: "action",
-      render: () => (
+      render: (_, record) => (
         <Dropdown
           menu={{
             items: [
               { key: "1", label: "Edit" },
-              { key: "2", label: "Delete" },
+              {
+                key: "delete",
+                label: (
+                  <Popconfirm
+                    title={`are you sure want to delete ${record.name} ?`}
+                    onConfirm={() => handleDelete(record.id!, record.name!)}
+                  >
+                    <span className="text-red-500">Delete</span>
+                  </Popconfirm>
+                ),
+              },
             ],
           }}
           trigger={["click"]}
@@ -83,6 +125,7 @@ const UserTable = () => {
 
   return (
     <div className="p-6 bg-white rounded-lg shadow">
+      {/* Filters */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex gap-2">
           <label className="font-medium">Filter</label>
@@ -92,8 +135,8 @@ const UserTable = () => {
             onChange={(value) => setFilteredGender(value)}
             style={{ width: 120 }}
           >
-            <Option value="Male">Male</Option>
-            <Option value="Female">Female</Option>
+            <Option value="male">Male</Option>
+            <Option value="female">Female</Option>
           </Select>
           <Select
             placeholder="Status"
@@ -101,12 +144,11 @@ const UserTable = () => {
             onChange={(value) => setFilteredStatus(value)}
             style={{ width: 120 }}
           >
-            <Option value="Active">Active</Option>
-            <Option value="Inactive">Inactive</Option>
+            <Option value="active">Active</Option>
+            <Option value="inactive">Inactive</Option>
           </Select>
         </div>
 
-        {/* Search */}
         <Input.Search
           placeholder="Search name"
           allowClear
@@ -120,6 +162,7 @@ const UserTable = () => {
         columns={columns}
         dataSource={filteredData}
         pagination={{ pageSize: 10 }}
+        loading={loading}
       />
     </div>
   );
