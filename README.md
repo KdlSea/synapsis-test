@@ -1,5 +1,20 @@
 Project test synapsis by Fachri F
 
+Live Url : https://synapsis-test-fachrif.vercel.app/ </br>
+#user have to log-in first, will redirect to /log-in with created email and token </br>
+#dashboard data only fetch 100 latest user and post </br>
+![image](https://github.com/user-attachments/assets/cd10c8dd-2f33-47ba-8f53-decb9f8634ac)</br></br></br></br>
+
+#chart element ( not work )</br></br>
+![image](https://github.com/user-attachments/assets/b3aa0fc6-0485-437a-bcff-0f7e2c7b9b46)</br></br>
+
+#sidebar toggle not work</br>
+#create- post and user works</br>
+
+
+
+</br></br></br></br></br></br></br>
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
